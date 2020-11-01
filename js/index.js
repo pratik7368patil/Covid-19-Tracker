@@ -1,17 +1,36 @@
+const showAlert = (data, status) => {
+	var alertEle = document.getElementById("alert_status");
+	alertEle.className = `show ${status ? 'ok' : 'error'}`;
+
+	alertEle.innerText = data;
+	setTimeout(function(){ alertEle.className = alertEle.className.replace("show", ""); }, 3000);
+}
+
 const mainUrl = 'https://covid19.mathdro.id/api';
 
 const countriesUrl = 'https://covid19.mathdro.id/api/countries/';
 
 // fetching all data
-fetch(mainUrl)
-.then(res => res.json())
-.then(data => getData(data));
+(function() {
+	try {
+		fetch(mainUrl)
+		.then(res => res.json())
+		.then(data => {getData(data); showAlert('Got it!', true)});
+	} catch(error) {
+		showAlert('404 Error!', false);
+	}
+})();
 
 // fetching countires data
-fetch(countriesUrl)
-.then(res => res.json())
-.then(data => getCountires(data));
-
+(function() {
+	try {
+		fetch(countriesUrl)
+		.then(res => res.json())
+		.then(data => {getCountires(data); showAlert('Got it!', true)});
+	} catch(error) {
+		showAlert('404 Error!', false);
+	}
+})();
 
 // fetching countries stats
 
@@ -21,9 +40,9 @@ const giveMeCountryData = function(countryName) {
 	try {
 		fetch(url)
 		.then(res => res.json())
-		.then(data => displayData(data, countryName));
+		.then(data => {displayData(data, countryName); showAlert('Got it!', true)});
 	} catch(error) {
-		console.log(error);
+		showAlert('404 Error!', false);
 	}
 }
 
@@ -70,8 +89,11 @@ const displayCountries = function(data) {
 
 const changeData = function() {
 	let getLocation = document.getElementById('location');
+	if(getLocation.value) {
+		showAlert('Bad Country!', false);
+	}
 	if(getLocation.value === '') {
-		alert('Empty Country');
+		showAlert('Please provide Country!', false);
 		return;
 	}
 	giveMeCountryData(getLocation.value);
